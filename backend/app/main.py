@@ -2,7 +2,18 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routes import upload, jobs
 from .database import Base, engine
+from app.routes import status
+from fastapi.middleware.cors import CORSMiddleware
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+from app.routes import export
+app.include_router(export.router)
 # Create DB tables
 Base.metadata.create_all(bind=engine)
 
@@ -16,6 +27,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+app.include_router(status.router)
 
 app.include_router(upload.router)
 app.include_router(jobs.router)
