@@ -1,193 +1,181 @@
 # 🚀 Async Document Processing System
 
-## 📌 Overview
-
-This is a full-stack asynchronous document processing system built using FastAPI, React, Celery, Redis, and PostgreSQL.
-
-Users can upload documents, which are processed in the background. The system tracks job progress and allows retrying and exporting results.
+A production-style asynchronous backend system built using **FastAPI, Celery, Redis, PostgreSQL, and Docker**.
+This system allows users to upload documents, process them asynchronously, and retrieve results without blocking the API.
 
 ---
 
-## 🧠 Architecture
+## 🧠 Overview
 
-Frontend (React + TypeScript)
-↓
-FastAPI Backend (REST API)
-↓
-PostgreSQL (Database)
-↓
-Celery Workers (Async Processing)
-↓
-Redis (Broker + Pub/Sub)
+This project demonstrates how to build a **scalable async system** where:
+
+* Users upload documents via API
+* Backend stores metadata in PostgreSQL
+* Heavy processing runs in background using Celery
+* Redis acts as a message broker
+* System is fully containerized using Docker
 
 ---
 
 ## ⚙️ Tech Stack
 
-### Backend
-
-* FastAPI (Python)
-* SQLAlchemy
-* PostgreSQL
-* Celery
-* Redis
-
-### Frontend
-
-* React (TypeScript)
-* Fetch API
+* **Backend:** FastAPI
+* **Async Processing:** Celery
+* **Message Broker:** Redis
+* **Database:** PostgreSQL
+* **Containerization:** Docker + Docker Compose
+* **Frontend (optional):** React (Vite)
 
 ---
 
-## ✨ Features
+## 📁 Project Structure
 
-* Upload documents
-* Asynchronous background processing
-* Job status tracking (Queued → Processing → Completed → Failed)
-* Retry failed jobs
-* Export processed data (JSON)
-* Dashboard with auto-refresh
-
----
-
-## 🔄 Workflow
-
-1. User uploads a document
-2. Backend stores metadata in PostgreSQL
-3. Celery processes document asynchronously
-4. Redis handles messaging
-5. Status updates in database
-6. Frontend displays progress
-
----
-
-## 📡 API Endpoints
-
-* POST `/upload` → Upload document
-* GET `/documents` → List documents
-* POST `/retry/{id}` → Retry job
-* GET `/export/{id}` → Export JSON
-
----
-
-## 🚀 Setup Instructions
-
-### 1. Clone Repo
-
-```bash
-git clone https://github.com/<your-username>/async-system.git
-cd async-system
+```
+async-system/
+│
+├── backend/
+│   ├── app/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── workers/
+│   │   ├── database.py
+│   │   ├── models.py
+│   │   ├── schemas.py
+│   │   └── main.py
+│   │
+│   ├── celery_worker.py
+│   ├── Dockerfile
+│   ├── requirements.txt
+│
+├── frontend/
+│
+├── docker-compose.yml
+└── README.md
 ```
 
 ---
 
-### 2. Backend Setup
+## 🚀 Features
 
-```bash
-cd backend
-python3 -m venv venv
-source venv/bin/activate
+* 📄 Upload documents via API
+* ⚡ Asynchronous background processing
+* 🔄 Task queue using Celery + Redis
+* 🗄️ Persistent storage with PostgreSQL
+* 🐳 Fully Dockerized microservices
+* 📊 Scalable architecture
 
-pip install fastapi uvicorn sqlalchemy psycopg2-binary pydantic celery redis python-multipart
+---
+
+## 🧪 API Endpoints
+
+### 🔹 Upload File
+
+```
+POST /upload
+```
+
+### 🔹 Get Documents
+
+```
+GET /documents
+```
+
+### 🔹 Health Check
+
+```
+GET /
 ```
 
 ---
 
-### 3. Start PostgreSQL
+## 🐳 Running with Docker
 
-```bash
-sudo service postgresql start
+### Step 1: Start services
+
+```
+docker-compose up --build
 ```
 
-Create DB:
+### Step 2: Open API docs
 
-```bash
-sudo -u postgres psql
 ```
-
-```sql
-CREATE DATABASE docdb;
-ALTER USER postgres PASSWORD 'password';
-\q
+http://localhost:8000/docs
 ```
 
 ---
 
-### 4. Start Redis
+## ⚠️ Important Configuration
 
-```bash
-redis-server
+### Database (Docker)
+
+```
+postgresql://postgres:password@db:5432/docdb
+```
+
+### Redis (Docker)
+
+```
+redis://redis:6379/0
 ```
 
 ---
 
-### 5. Start Celery
+## 🔄 How It Works
 
-```bash
-python -m celery -A celery_worker.celery worker --loglevel=info
+1. User uploads a file via `/upload`
+2. File metadata is stored in PostgreSQL
+3. A Celery task is triggered
+4. Task is sent to Redis queue
+5. Worker picks the task
+6. Background processing happens
+7. Result is stored/updated
+
+---
+
+## 🧠 Architecture
+
+```
+Client → FastAPI → Redis Queue → Celery Worker → PostgreSQL
 ```
 
 ---
 
-### 6. Start Backend
+## 📦 Worker Logs Example
 
-```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+Task received
+Processing document...
+Task succeeded
 ```
 
 ---
 
-### 7. Frontend
+## 🎯 Key Learning Outcomes
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
----
-
-## 🌐 Access
-
-Backend Docs:
-http://<your-ip>:8000/docs
-
-Frontend:
-http://localhost:5173
-
----
-
-## 📌 Assumptions
-
-* Processing logic is simulated
-* Single worker
-* Polling used instead of WebSockets
-
----
-
-## ⚠️ Limitations
-
-* No authentication
-* Files not stored permanently
-* Basic UI
+* Asynchronous task processing
+* Microservices communication
+* Docker-based deployment
+* Queue-based architecture
+* Backend scalability patterns
 
 ---
 
 ## 💡 Future Improvements
 
-* WebSockets for real-time updates
-* File storage (S3/local)
-* Authentication system
-* Docker setup
+* Add task status tracking API
+* Add frontend UI for uploads
+* Add authentication
+* Add file storage (S3/local)
+* Add retry & failure handling
 
 ---
 
-## 🎥 Demo
+## 👨‍💻 Author
 
-(Add your demo video link here)
+**Sandesh Singh**
 
 ---
 
-## 🏁 Conclusion
+## ⭐ Conclusion
 
-This project demonstrates asynchronous processing, backend architecture design, and integration of API, database, and background workers.
+This project demonstrates a real-world backend system design using asynchronous processing and distributed services. It highlights scalability, performance optimization, and clean architecture practices used in modern backend systems.
