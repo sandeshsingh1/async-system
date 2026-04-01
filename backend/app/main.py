@@ -1,25 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import upload, jobs
-from .database import Base, engine
-from app.routes import status
-from fastapi.middleware.cors import CORSMiddleware
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-from app.routes import export
-app.include_router(export.router)
-# Create DB tables
-Base.metadata.create_all(bind=engine)
+from app.routes import upload, jobs, status, export
+from app.database import Base, engine
 
+# ✅ Create app ONCE
 app = FastAPI()
 
-# Enable CORS (frontend connection)
+# ✅ CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -28,11 +16,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ✅ Create tables
+Base.metadata.create_all(bind=engine)
 
-app.include_router(status.router)
-
+# ✅ Routes
 app.include_router(upload.router)
 app.include_router(jobs.router)
+app.include_router(status.router)
+app.include_router(export.router)
+
 
 @app.get("/")
 def root():
