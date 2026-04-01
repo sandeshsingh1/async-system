@@ -4,8 +4,14 @@ from celery_worker import celery
 
 from app.database import SessionLocal
 from app.models import Document
-r = redis.Redis(host="localhost", port=6379, db=0)
+import os
+import redis
 
+r = redis.Redis(
+    host=os.getenv("REDIS_HOST", "redis"),
+    port=6379,
+    db=0
+)
 @celery.task
 def process_document(doc_id):
     db = SessionLocal()
